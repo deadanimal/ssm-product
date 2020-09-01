@@ -47,16 +47,18 @@ class CallViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         queryset = Call.objects.all()
         return queryset  
 
-    @action(methods=['GET'], detail=False)
+    @action(methods=['POST'], detail=False)
     def services(self, request, *args, **kwargs):        
 
-        s = request.body
-        u = str(s, 'utf-8')     
+        s = json.loads(request.body)
+        
+        request_service_name = s['name']
+        
+        if request_service_name == 'getCompProfile':
+            response_json = call_middleware('getCompProfile',s['registration_number'])
 
-        request_service_name = request.GET.get('name', '')
-        if request_service_name:
-            response_json = call_middleware(1,2)
-        else:
-            response_json = call_middleware('getBasicCompProf','960536X')         
+        if request_service_name == 'getFin2':
+            response_json = call_middleware('getFin2',s['registration_number'])            
+   
 
         return JsonResponse(response_json)         

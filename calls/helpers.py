@@ -9,14 +9,18 @@ from calls.services.get_basic_comp_prof import (
     get_basic_company_profile
 )
 
-def call_middleware(service_name, request_json):
+from calls.services.get_fin2 import get_fin2
+
+def call_middleware(service_name, registration_number):
 
     url = "http://integrasistg.ssm.com.my/InfoService/1"
     headers = {
         'content-type': "text/xml;charset=UTF-8",
-        'authorization': "U1NNUHJvZHVrfDIwMjAtMDgtMjlUMDU6MDY6MDFafENwcEI0TVF3YTlIdXVQWm85aGgzeG10bVBFNzBBTjQvRTJXVUpuY25RbjA9"
+        'authorization': "U1NNUHJvZHVrfDIwMjAtMDktMDEgMTA6MzU6MDB8SnlnU1pUL055RlNKSnRXSk01TXF1a29QV1ZNQXQwRjcrRk5aeUkwV2I0bz0="
     }
 
-    
-    json_response = get_basic_company_profile(url, headers, 'registration_number', 'check_digit')
+    if service_name == 'getCompProfile':
+        json_response = get_basic_company_profile(url, headers, registration_number)
+    elif service_name == 'getFin2':
+        json_response = get_fin2(url, headers, registration_number)
     return json_response
