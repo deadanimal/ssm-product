@@ -61,3 +61,24 @@ class DiagramViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             item['png_link'] = generate_diagram(item['chart_text'], 'png')
         """
         return JsonResponse({'svg_link':svg_link})         
+
+    @action(methods=['POST'], detail=False)
+    def create_product(self, request, *args, **kwargs):
+        items = []
+
+        html_string = render_to_string('template_profile.html', {'items': items})
+        html = HTML(string=html_string)
+        pdf_file = html.write_pdf()
+        
+        file_path = "ssm/product/" + datetime.datetime.utcnow().strftime("%s") + "-" + uuid.uuid4().hex + '.pdf'
+        # "mbpj-ghg/application-report/" <-- naming system
+        saved_file = default_storage.save(
+            file_path, 
+            ContentFile(pdf_file)
+        )
+        
+        full_url_path = settings.MEDIA_ROOT + saved_file
+        # print(full_url_path)
+
+        serializer = 'https://pipeline-project.sgp1.digitaloceanspaces.com/'+full_url_path
+        return Response(serializer)
